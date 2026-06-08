@@ -32,7 +32,7 @@ const questions = [
   },
   {
     question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars", "Venus"],
+    choices: ["Earth", "Jupiter", "Mars", "Saturn"],
     answer: "Jupiter",
   },
   {
