@@ -1,5 +1,17 @@
 //your JS code here.
 
+const questionsElement = document.getElementById("questions");
+const scoreElement = document.getElementById("score");
+
+// Load saved progress from sessionStorage
+const userAnswers = JSON.parse(sessionStorage.getItem("progress")) || {};
+
+// Load saved score from localStorage (optional display after refresh)
+const savedScore = localStorage.getItem("score");
+if(savedScore !== null) {
+	scoreElement.innerText = `Your score is ${savedScore} out of 5.`;
+}
+
 // Do not change code below this line
 // This code will just display the questions to the screen
 const questions = [
@@ -20,7 +32,7 @@ const questions = [
   },
   {
     question: "Which is the largest planet in our solar system?",
-    choices: ["Earth", "Jupiter", "Mars"],
+    choices: ["Earth", "Jupiter", "Mars", "Venus"],
     answer: "Jupiter",
   },
   {
@@ -30,27 +42,62 @@ const questions = [
   },
 ];
 
+// Save progress to sessionStorage
+function saveProgress() {
+	sessionStorage.setItem("progress", JSON.stringify(userAnswers));
+}
+
 // Display the quiz questions and choices
 function renderQuestions() {
   for (let i = 0; i < questions.length; i++) {
     const question = questions[i];
+	  
     const questionElement = document.createElement("div");
     const questionText = document.createTextNode(question.question);
     questionElement.appendChild(questionText);
+	  
     for (let j = 0; j < question.choices.length; j++) {
       const choice = question.choices[j];
+		
       const choiceElement = document.createElement("input");
       choiceElement.setAttribute("type", "radio");
       choiceElement.setAttribute("name", `question-${i}`);
       choiceElement.setAttribute("value", choice);
-      if (userAnswers[i] === choice) {
+      
+	  if (userAnswers[i] === choice) {
         choiceElement.setAttribute("checked", true);
       }
+
+	  // save answer on change
+	  choiceElement.addEventListener("change", () => {
+		  userAnswers[i] = choice;
+		  saveProgress();
+	  });
+		
       const choiceText = document.createTextNode(choice);
       questionElement.appendChild(choiceElement);
       questionElement.appendChild(choiceText);
     }
+	  
     questionsElement.appendChild(questionElement);
   }
 }
+
+// Submit quiz
+document.getElementById("submit").addEventListener("click", () => {
+	let score = 0;
+
+	for(let i = 0; i < questions.length; i++) {
+		if(userAnswers[i] === questions[i].answer) {
+			score++;
+		}
+	}
+
+	scoreElement.innerText = `Your score is ${score} out of 5.`;
+
+	// store in localStorage
+	localStorage.setItem("score", score);
+})
+
+// Initial render
 renderQuestions();
